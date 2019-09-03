@@ -1,0 +1,26 @@
+PREPARE AND DEPLOYMENT
+
+ 1	GO TO CLIENT FOLDER vue.config.js
+
+2	GO TO POSTSERVICE.JS then delete  http://localhost:5000/ from const url then go to VUE.CONFIG.JS
+-------------------------------------------------------------------------------------------------------------------
+VUE.CONFIG.JS
+-------------------------------------------------------------------------------------------------------------------
+3	const path = require('path');
+
+3	module.exports = {
+
+4	outputDir: path.resolve(__dirname, '../server/public'),   //GO TO CLIENT PBULIC INDEX.HTML  BELOW
+
+3    	devServer: {
+3        	proxy: {
+3            	'/api': {
+3                	target: 'http://localhost:5000'
+3            	}
+3        	}
+3    	}
+3	};
+
+
+
+INDEX.HTML  change the title

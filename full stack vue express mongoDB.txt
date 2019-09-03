@@ -1,0 +1,91 @@
+1 BUILD BACKEND
+
+1	on vscode terminal type npm init then on description Full Stack vue and Express App then install dependencies  type npm i express cors body-parser mongodb then type npm i -D nodemon
+
+2	GO TO PACKAGE.JSON THEN edit the scripts
+---------------------------------------------------------------------------------------------------------------------
+PACKAGE.JSON
+---------------------------------------------------------------------------------------------------------------------
+2	"scripts": {
+2	    "start": "node server/index.js",
+2	    "dev": "nodemon server/index.js"
+2	  },
+
+3	CREATE A SERVER FOLDER GO TO TERMINAL AND TYPE mkdir server enter then type cd server the ntype touch index.js then type cd ..   then go to server folder then index.js
+-------------------------------------------------------------------------------------------------------------------
+INDEX.JS
+-------------------------------------------------------------------------------------------------------------------
+4	const express = require('express');
+4	const bodyParser = require('body-parser');
+4	const cors = require('cors');
+
+4	// Initialize app with express
+4	const app = express();
+
+4	//Middleware
+4	app.use(bodyParser.json());
+4	app.use(cors());
+
+6	//connect the file
+6	const posts = require('./routes/api/posts');
+
+6	app.use('/api/posts', posts);    //GO TO POSTS.JS BELOW
+
+4	//Create variable for port
+4	const port = process.env.PORT || 5000;
+4	app.listen(port, () => console.log('Server started on port '+port));
+
+
+5 GO TO TERMINAL AND TYPE npm run dev INSIDE SERVER FOLDER CREATE FOLDER ROUTES AND INSIDE ROUTES CREATE FOLDER API AND INSIDE API CREATE POSTS.JS
+
+6	link posts.js  GO TO INDEX.JS ABOVE
+
+
+-------------------------------------------------------------------------------------------------------------------
+POSTS.JS
+-------------------------------------------------------------------------------------------------------------------
+7	const express = require('express');
+7	const mongodb = require('mongodb');
+
+7	//Create Router
+7	const router = express.Router();
+
+7	//Get Posts
+7	router.get('/', //10 async (req, res) => {
+7	    res.send('Hello');   
+10	     const posts = await loadPostsCollection();
+10	    res.send(await posts.find({}).toArray());
+7	});
+
+7	//Add Posts
+11	router.post('/', async (req, res) => {
+11	    const posts = await loadPostsCollection();
+11	    await posts.insertOne({
+11	        text: req.body.text,
+11	       createdAt: new Date()
+11	    });
+11	    //Http response
+11	    res.status(201).send;
+11	});   // GO TO POSTMAN AND TRY TO ADD POST then copy the url then on header key content-type ; value: application/json; body hit raw then type json data {"text": "Hello World"}   
+
+7	//Delete Posts
+12	router.delete('/:id', async (req, res) => {
+12	    const posts = await loadPostsCollection();
+12	    await posts.deleteOne({_id: new mongodb.ObjectId(req.params.id)});
+12	    res.status(200).send();
+12	});  //GO TO POSTMAN TO TEST    
+
+9	//Function to connect posts collection
+9	async function loadPostsCollection() {
+9	    const client = await mongodb.MongoClient.connect('mongodb+srv://codejest1028:dec072005@cluster1-4ntup.mongodb.net/test?retryWrites=true&w=majority', {
+9	        useNewUrlParser: true
+9	    });
+9	    return client.db('vue_express').collection('posts');
+9	} // GO UP AND DELETE res.send()
+
+7	module.exports = router;
+
+
+7	CHECK GO TO BROWSER http://localhost:5000/api/posts
+
+8	go to mongodb.com and create user then copy the link and go to posts.js above

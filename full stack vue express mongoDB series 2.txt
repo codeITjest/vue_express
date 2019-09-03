@@ -1,0 +1,196 @@
+1	open up a new terminal click + on the terminal npm i -g @vue/cli
+
+IDEA: have a client folder that runs the dev server that comes with vuejs and contains the cli and build static app to the server and then deploy
+
+2	create a file on the root folder .gitignore and inside the file type
+2		 /client
+2		node_modules
+
+3	then enter   	GO TO TERMINAL AND TYPE vue create client 
+4	create repository 	TYPE git init  
+4			git add . && git commit -m 'Initial backend created'  press enter then type cd client then type npm run serve   -> this will run the vue server   test type in the browser localhost:8080 as the default host   THEN GO TO CLIENT SRC COMPONENTSTHEN CHANGE THE FILE NAME OF HELLOWORLD INTO POSTSCOMPONENT.VUE THEN GO TO APP.VUE AND CHANGE THE FILENAME DESTINATION and all HelloWorld into PostComponent
+
+-------------------------------------------------------------------------------------------------------------------
+APP.VUE
+-------------------------------------------------------------------------------------------------------------------
+5	<template>
+5	  <div id="app">
+5	    <img alt="Vue logo" src="./assets/logo.png">
+5	    <PostComponent />
+5	  </div>
+5	</template>
+
+5	<script>
+5	import PostComponent from './components/PostComponent.vue'
+
+5	export default {
+5	  name: 'app',
+5	  components: {
+5	    PostComponent
+5	  }
+5	}
+5	</script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+
+
+
+6	CREATE SERVICE THAT HANDLES OUR REQUEST USING AXIOS ON THE TERMINAL CTRL+C and type npm i axios  then type nom run serve again
+
+7	INSIDE SRC FOLDER CREATE A FILE PostService.js
+-------------------------------------------------------------------------------------------------------------------
+POSTSERVICE.JS
+-------------------------------------------------------------------------------------------------------------------
+8	import axios from 'axios';
+
+8	const url = 'http://localhost:5000/api/posts/';
+
+8	class PostService {
+8	    //Get Posts
+8	    static getPosts() {
+8	        return new Promise(async (resolve, reject) => {
+8	            try {
+8	                const res = await axios.get(url);
+8	                const data = res.data;
+8	                resolve(
+8	                    data.map(post => ({
+8	                        ...post,
+8	                        createdAt: new Date(post.createdAt)
+8	                    }))
+8	                );
+8	            }catch(err) {
+8	                reject(err);
+8	            }
+8	        })
+8	    }
+
+9	 //Create Post
+9	    static insertPost(text) {
+9	        return axios.post(url, {
+9	            text
+9	        });
+9	    }
+9	    //Delete Post
+9	    static deletePost(id) {
+9	        return axios.delete(`${url}${id}`);
+9	    }
+8	}
+
+9	export default PostService; // GO TO POSTCOMPONENT.VUE BELOW
+
+-------------------------------------------------------------------------------------------------------------------
+POSTCOMPONENT.VUE   //NUMBERING INSIDE THIS IS ONLY FOR POSTCOMPONENT.VUE
+-------------------------------------------------------------------------------------------------------------------
+
+	<template>
+3		<div class="container">
+3		    <h1>Latest Posts</h1>
+3		    <!--CREATE POST HERE-->
+4		<div class="create-post">
+4		      <label for="create-post">Say Something...</label>
+4		      <input type="text" id="create-post" v-model="text" placeholder="Create a post">
+4		      <button v-on:click="createPost">Post!</button>
+4		    </div>
+
+3		    <hr>
+3		    <p class="error" v-if="error">{{ error }}</p>
+3		    <div class="posts-container">
+3		      <div class="post" 
+3		         v-for="(post, index) in posts" 
+3		         v-bind:item="post"
+ 3		        v-bind:index="index"
+3		         v-bind:key="post._id"
+7			v-on:dblclick="deletePost(post._id)"
+
+3		          >
+3		           {{ `${post.createdAt.getDate()}/${post.createdAt.getMonth()}/${post.createdAt.getFullYear()}` }}
+3		          <p class="text">{{ post.text }}</p>
+3		      </div>
+3		    </div>
+3		  </div>	  
+	</template>
+
+	<script>
+2	import PostService from '../PostService';
+
+2	export default {
+2	  name: 'PostComponent',
+2	  data() {
+2	    return {
+2	      posts: [],
+2	      error: '',
+2	      text: ''
+2	    }
+2	  },
+2	  async created() {
+2	    try {
+2	      this.posts = await PostService.getPosts();
+2	    }catch(err) {
+2	      this.error = err.message;
+2	   }
+2	  },
+
+5	methods: {
+5	    async createPost() {
+5	      await PostService.insertPost(this.text);
+5	      this.post = await PostService.getPosts();
+5	    }
+5	  },
+
+6	async deletePost(id) {
+6                await PostService.deletePost(id);
+6                this.post = await PostService.getPosts();
+6              }   //GO  UP
+
+2	};
+	</script>
+
+	<!-- Add "scoped" attribute to limit CSS to this component only -->
+	<style scoped>
+1	div.container {
+1	  max-width: 800px;
+1	 margin: 0 auto;
+1	}
+
+1	p.error {
+1	 border: 1px solid #ff5b5f;
+1	  background-color: #ffc5c1;
+1	  padding: 10px;
+1	  margin-bottom: 15px;
+1	}
+
+1	div.post {
+1	  position: relative;
+1	  border: 1px solid #5bd658;
+ 1	 background-color: #bcffb8;
+ 1	 padding: 10px 10px 30px 10px;
+1	  margin-bottom: 15px;
+1	}
+
+1	div.created-at {
+ 1	 position: absolute;
+ 1	 top: 0;
+ 1	 left: 0;
+ 1	 padding: 5px 15px 5px 15px;
+ 1	 background-color: darkgreen;
+1	  color: white;
+ 1	 font-size: 13px;
+1	}
+
+1	p.text {
+1	  font-size: 22px;
+ 1	 font-weight: 700;
+1	  margin-bottom: 0;
+1	}
+	</style>
+
+
